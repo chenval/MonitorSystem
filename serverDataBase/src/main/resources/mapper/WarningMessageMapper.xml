@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chenval.database.infra.mapper.WarningMessageMapper">
+
+    <resultMap id="result" type="com.chenval.tool.domain.entity.WarningMessage">
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="DATE"/>
+        <result property="isHandle" column="is_handle" jdbcType="TINYINT"/>
+        <result property="lastUpdateTime" column="last_update_time" jdbcType="DATE"/>
+        <result property="message" column="message" jdbcType="VARCHAR"/>
+        <result property="warningCount" column="warning_count" jdbcType="INTEGER"/>
+
+    </resultMap>
+    <insert id="insertWarningMessage">
+        insert into warning_message  values (0,#{warningMessage.ip},#{warningMessage.message},now(),now(),1,false)
+    </insert>
+    <update id="updateWarningMessage">
+        update warning_message set warning_count = warning_count + 1,last_update_time = now(),message = #{warningMessage.message} where ip = #{warningMessage.ip}
+    </update>
+    <select id="selectWarningMessageList" resultMap="result">
+        select *from warning_message where ip = #{ip} order by last_update_time desc limit #{num}
+    </select>
+    <select id="getAllNoHandleMessage" resultMap="result">
+         select *from warning_message where is_handle = 0
+    </select>
+    <update id="handleWarningMessage">
+        update warning_message set handle = true where ip = #{ip}
+    </update>
+</mapper>

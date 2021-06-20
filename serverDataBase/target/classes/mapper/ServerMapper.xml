@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.chenval.database.infra.mapper.ServerMapper">
+    <resultMap id="serverResult" type="com.chenval.tool.domain.entity.ServerMessage">
+        <result property="communityName" column="community_name" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="port" column="port" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="operationSystem" column="operation_system" jdbcType="VARCHAR"/>
+        <result property="statusId" column="status_id" jdbcType="TINYINT"/>
+        <result property="cpuThreshold" column="cpu_threshold" jdbcType="INTEGER"/>
+        <result property="memThreshold" column="mem_threshold" jdbcType="INTEGER"/>
+    </resultMap>
+    <insert id="addServer">
+        insert into server_message
+        values
+        <foreach collection="serverMessageList" item="item" index="index" separator=",">
+            (
+                #{item.ip},
+                #{item.communityName},
+                #{item.port},
+                #{item.name},
+                #{item.operationSystem},
+                #{item.statusId},
+                #{item.cpuThreshold},
+                #{item.memThreshold}
+            )
+        </foreach>
+    </insert>
+    <update id="updateServerMessage">
+        update server_message
+        <trim prefix="set" suffixOverrides=",">
+            <if test="serverMessage.communityName!= null and serverMessage.communityName!= '' "> community_name = #{serverMessage.communityName,jdbcType=VARCHAR},</if>
+            <if test="serverMessage.port != null and serverMessage.port !=''"> port = #{serverMessage.port,jdbcType=INTEGER},</if>
+            <if test="serverMessage.name != null and serverMessage.name!=''"> `name` = #{serverMessage.name,jdbcType=VARCHAR},</if>
+            <if test="#{serverMessage.statusId} == null"> status_id = status_id,</if>
+            <if test="serverMessage.operationSystem != null and serverMessage.operationSystem!=''"> operation_system = #{serverMessage.operationSystem,jdbcType=VARCHAR},</if>
+            <if test="serverMessage.cpuThreshold != null and serverMessage.cpuThreshold!=0" > cpu_threshold = #{serverMessage.cpuThreshold,jdbcType=INTEGER},</if>
+            <if test="serverMessage.memThreshold != null and serverMessage.memThreshold!=0"> mem_threshold = #{serverMessage.memThreshold,jdbcType=INTEGER},</if>
+        </trim>
+        WHERE ip = #{serverMessage.ip}
+    </update>
+    <delete id="deleteServer">
+        delete  from server_message where ip = #{ip}
+    </delete>
+    <select id="getAllServer" resultMap="serverResult">
+        select ip, community_name, port, `name`, operation_system,status_id,cpu_threshold,mem_threshold
+        from server_message
+    </select>
+
+    <select id="getOneServer" resultMap="serverResult">
+        select ip, community_name, port, `name`, operation_system,status_id,cpu_threshold,mem_threshold
+        from server_message where ip = #{ip}
+    </select>
+
+</mapper>
